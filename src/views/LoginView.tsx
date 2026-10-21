@@ -1,5 +1,6 @@
+// src/views/LoginView.tsx
 import React, { useState } from 'react';
-import { Package, Lock, Mail, ArrowRight, Shield, User, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, Info } from 'lucide-react';
 import { store } from '../lib/storage';
 
 interface LoginViewProps {
@@ -36,13 +37,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       setError('Silakan masukkan alamat email.');
       return;
     }
-    handleLogin(email, password || 'password123');
-  };
-
-  const handleQuickLogin = (quickEmail: string) => {
-    setEmail(quickEmail);
-    setPassword('password123');
-    handleLogin(quickEmail, 'password123');
+    if (!password) {
+      setError('Silakan masukkan kata sandi.');
+      return;
+    }
+    handleLogin(email, password);
   };
 
   return (
@@ -53,17 +52,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 relative z-10">
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-900/40 mb-3">
-            <Package className="w-7 h-7 text-white" />
-          </div>
+          <img
+            src="/images/icon.png"
+            alt="SIMETRIS Logo"
+            className="w-16 h-16 rounded-2xl object-contain shadow-xl shadow-emerald-950/50 mb-3 border border-emerald-500/20 bg-slate-800"
+          />
           <div className="flex items-center space-x-2">
             <span className="font-black tracking-tight text-2xl text-white">SIMETRIS</span>
-            <span className="text-[11px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
-              Sembako
-            </span>
           </div>
           <p className="text-xs text-slate-400 mt-1.5">
-            Sistem Manajemen Inventaris & Kedaluwarsa Berkah Jaya
+            Sistem Manajemen Inventaris & Kedaluwarsa Sembako
           </p>
         </div>
 
@@ -87,7 +85,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="cth. owner@berkahjaya.com"
+                placeholder="owner@simetris.test"
                 required
                 className="w-full text-xs bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition-all"
               />
@@ -104,7 +102,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="password"
+                required
                 className="w-full text-xs bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition-all"
               />
             </div>
@@ -120,80 +119,45 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
           </button>
         </form>
 
-        {/* Demo Fast Login Helper */}
+        {/* Informasi Pilihan Akun Demo (Kata-kata saja) */}
         <div className="mt-6 pt-5 border-t border-slate-800/80">
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 text-center">
-            Pilihan Akun Demo (1-Klik Masuk)
+          <div className="flex items-center justify-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
+            <Info className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Pilihan Akun Demo</span>
           </div>
-          <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('owner@berkahjaya.com')}
-              className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 text-left transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center space-x-2.5">
-                <div className="w-7 h-7 rounded-md bg-amber-950 text-amber-400 border border-amber-800/80 flex items-center justify-center">
-                  <Shield className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white group-hover:text-amber-300 transition-colors">
-                    Hj. Siti Rahmah (Owner)
-                  </div>
-                  <div className="text-[10px] text-slate-400">owner@berkahjaya.com • Hak Akses Penuh</div>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/60">
-                Owner
-              </span>
-            </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('budi@berkahjaya.com')}
-              className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 text-left transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center space-x-2.5">
-                <div className="w-7 h-7 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800/80 flex items-center justify-center">
-                  <User className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white group-hover:text-emerald-300 transition-colors">
-                    Budi Santoso (Staff Operasional)
-                  </div>
-                  <div className="text-[10px] text-slate-400">budi@berkahjaya.com • Produk, PO, Terima</div>
-                </div>
+          <div className="bg-slate-800/70 rounded-xl p-3.5 border border-slate-700/80 space-y-2.5 text-xs">
+            <div className="flex items-start space-x-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 mt-1 shrink-0" />
+              <div className="leading-snug">
+                <span className="font-semibold text-white">Owner:</span>{' '}
+                <span className="font-mono text-slate-300 text-[11px]">
+                  <span className="text-emerald-300 font-semibold select-all">owner@simetris.test</span>, sandi:{' '}
+                  <span className="text-emerald-300 font-semibold select-all">password</span>
+                </span>
               </div>
-              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/60">
-                Staff
-              </span>
-            </button>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('andi@berkahjaya.com')}
-              className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 text-left transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center space-x-2.5">
-                <div className="w-7 h-7 rounded-md bg-blue-950 text-blue-400 border border-blue-800/80 flex items-center justify-center">
-                  <User className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white group-hover:text-blue-300 transition-colors">
-                    Andi Wijaya (Staff Gudang)
-                  </div>
-                  <div className="text-[10px] text-slate-400">andi@berkahjaya.com • Tanpa Izin Produk/PO</div>
-                </div>
+            <div className="flex items-start space-x-2.5 pt-1 border-t border-slate-700/50">
+              <span className="w-2 h-2 rounded-full bg-slate-500 mt-1 shrink-0" />
+              <div className="leading-snug">
+                <span className="font-semibold text-slate-400">Staf:</span>{' '}
+                <span className="font-mono text-slate-400 text-[11px]">
+                  <span className="text-slate-300 font-semibold">staf@simetris.test</span>, sandi:{' '}
+                  <span className="text-slate-300 font-semibold">staf123</span>
+                </span>
               </div>
-              <span className="text-[10px] font-bold text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded border border-blue-800/60">
-                Staff
-              </span>
-            </button>
+            </div>
           </div>
+
+          <p className="text-[11px] text-slate-500 mt-3 text-center">
+            Silakan ketik email dan sandi di atas pada formulir untuk masuk ke sistem.
+          </p>
         </div>
 
         {/* Footer info */}
-        <div className="mt-5 text-center text-[11px] text-slate-500">
-          Dilindungi oleh otentikasi peran FEFO SIMETRIS
+        <div className="mt-4 text-center text-[10px] text-slate-600">
+          Dilindungi oleh sistem otentikasi peran SIMETRIS
         </div>
       </div>
     </div>

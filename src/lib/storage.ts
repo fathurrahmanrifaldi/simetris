@@ -27,24 +27,21 @@ import type {
   ExpiryState,
 } from '../types/database';
 
-const STORAGE_KEY = 'simetris_data_v1';
+const STORAGE_KEY = 'simetris_data_v2';
 
-
-// Initial Seed Data for Sembako Store
+// Initial clean configuration
 const DEFAULT_BUSINESS: Business = {
   id: 'b0000000-0000-0000-0000-000000000001',
-  name: 'Toko Sembako Berkah Jaya',
+  name: 'Toko Berkah Jaya',
   timezone: 'Asia/Jakarta',
   expiry_warning_days: 30,
   expiry_urgent_days: 7,
-  created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-  updated_at: new Date(Date.now() - 30 * 86400000).toISOString(),
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 };
 
 const DEFAULT_PROFILES: Profile[] = [
-  { id: 'u0000000-0000-0000-0000-000000000001', full_name: 'Hj. Siti Rahmah (Owner)', email: 'owner@berkahjaya.com' },
-  { id: 'u0000000-0000-0000-0000-000000000002', full_name: 'Budi Santoso (Staff Operasional)', email: 'budi@berkahjaya.com' },
-  { id: 'u0000000-0000-0000-0000-000000000003', full_name: 'Andi Wijaya (Staff Gudang)', email: 'andi@berkahjaya.com' },
+  { id: 'u0000000-0000-0000-0000-000000000001', full_name: 'Owner Simetris', email: 'owner@simetris.test', password: 'password' },
 ];
 
 const DEFAULT_MEMBERS: BusinessMember[] = [
@@ -59,533 +56,17 @@ const DEFAULT_MEMBERS: BusinessMember[] = [
     can_confirm_receipt: true,
     created_at: DEFAULT_BUSINESS.created_at,
   },
-  {
-    business_id: DEFAULT_BUSINESS.id,
-    user_id: DEFAULT_PROFILES[1].id,
-    role: 'staff',
-    is_active: true,
-    can_manage_products: true,
-    can_manage_suppliers: false,
-    can_create_po: true,
-    can_confirm_receipt: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    business_id: DEFAULT_BUSINESS.id,
-    user_id: DEFAULT_PROFILES[2].id,
-    role: 'staff',
-    is_active: true,
-    can_manage_products: false,
-    can_manage_suppliers: false,
-    can_create_po: false,
-    can_confirm_receipt: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-  },
 ];
 
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: 'c1', business_id: DEFAULT_BUSINESS.id, name: 'Beras & Biji-bijian', created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'c2', business_id: DEFAULT_BUSINESS.id, name: 'Minyak & Margarin', created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'c3', business_id: DEFAULT_BUSINESS.id, name: 'Gula & Pemanis', created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'c4', business_id: DEFAULT_BUSINESS.id, name: 'Telur & Susu', created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'c5', business_id: DEFAULT_BUSINESS.id, name: 'Mi Instan & Pasta', created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'c6', business_id: DEFAULT_BUSINESS.id, name: 'Tepung & Bumbu', created_at: DEFAULT_BUSINESS.created_at },
-];
+const DEFAULT_CATEGORIES: Category[] = [];
+const DEFAULT_UNITS: Unit[] = [];
 
-const DEFAULT_UNITS: Unit[] = [
-  { id: 'u1', business_id: DEFAULT_BUSINESS.id, name: 'karung', allows_decimal: false, created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'u2', business_id: DEFAULT_BUSINESS.id, name: 'kg', allows_decimal: true, created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'u3', business_id: DEFAULT_BUSINESS.id, name: 'pcs', allows_decimal: false, created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'u4', business_id: DEFAULT_BUSINESS.id, name: 'dus', allows_decimal: false, created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'u5', business_id: DEFAULT_BUSINESS.id, name: 'liter', allows_decimal: true, created_at: DEFAULT_BUSINESS.created_at },
-  { id: 'u6', business_id: DEFAULT_BUSINESS.id, name: 'pak', allows_decimal: false, created_at: DEFAULT_BUSINESS.created_at },
-];
-
-const DEFAULT_SUPPLIERS: Supplier[] = [
-  {
-    id: 's1',
-    business_id: DEFAULT_BUSINESS.id,
-    name: 'PT Sumber Pangan Makmur',
-    phone: '081234567890',
-    address: 'Komp. Pergudangan Cikupa No. 12, Tangerang',
-    notes: 'Pemasok beras dan tepung',
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 's2',
-    business_id: DEFAULT_BUSINESS.id,
-    name: 'CV Berkah Minyak Nusantara',
-    phone: '081398765432',
-    address: 'Jl. Daan Mogot KM 18, Jakarta Barat',
-    notes: 'Distributor minyak goreng dan gula',
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 's3',
-    business_id: DEFAULT_BUSINESS.id,
-    name: 'Peternakan Unggas Sejahtera',
-    phone: '085711223344',
-    address: 'Bogor Selatan, Jawa Barat',
-    notes: 'Pemasok telur ayam segar harian',
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-];
-
-const DEFAULT_PRODUCTS: Product[] = [
-  {
-    id: 'p1',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'BRS-RAM-05K',
-    name: 'Beras Ramos Setra 5kg',
-    category_id: 'c1',
-    unit_id: 'u1',
-    min_stock: 10,
-    track_expiry: false,
-    last_purchase_price: 68000,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p2',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'BRS-PDW-05K',
-    name: 'Beras Pandan Wangi Super 5kg',
-    category_id: 'c1',
-    unit_id: 'u1',
-    min_stock: 8,
-    track_expiry: false,
-    last_purchase_price: 78000,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p3',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'MYK-BIM-02L',
-    name: 'Minyak Goreng Bimoli Pouch 2L',
-    category_id: 'c2',
-    unit_id: 'u3',
-    min_stock: 15,
-    track_expiry: true,
-    last_purchase_price: 36500,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p4',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'MYK-SNC-01L',
-    name: 'Minyak Goreng SunCo Pouch 1L',
-    category_id: 'c2',
-    unit_id: 'u3',
-    min_stock: 20,
-    track_expiry: true,
-    last_purchase_price: 19500,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p5',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'TLR-AYM-01K',
-    name: 'Telur Ayam Negeri Segar (kg)',
-    category_id: 'c4',
-    unit_id: 'u2',
-    min_stock: 25,
-    track_expiry: true,
-    last_purchase_price: 27000,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p6',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'GLA-GLK-01K',
-    name: 'Gula Pasir Gulaku Kuning 1kg',
-    category_id: 'c3',
-    unit_id: 'u3',
-    min_stock: 30,
-    track_expiry: false,
-    last_purchase_price: 16500,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p7',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'MIE-IND-GRG',
-    name: 'Indomie Goreng Original (Dus @40)',
-    category_id: 'c5',
-    unit_id: 'u4',
-    min_stock: 12,
-    track_expiry: true,
-    last_purchase_price: 112000,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p8',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'SSU-FFL-370',
-    name: 'Susu Kental Manis Frisian Flag 370g',
-    category_id: 'c4',
-    unit_id: 'u3',
-    min_stock: 24,
-    track_expiry: true,
-    last_purchase_price: 11800,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p9',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'TPG-SGB-01K',
-    name: 'Tepung Terigu Segitiga Biru 1kg',
-    category_id: 'c6',
-    unit_id: 'u3',
-    min_stock: 15,
-    track_expiry: true,
-    last_purchase_price: 12200,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'p10',
-    business_id: DEFAULT_BUSINESS.id,
-    sku: 'KCP-BNG-550',
-    name: 'Kecap Manis Bango Pouch 550ml',
-    category_id: 'c6',
-    unit_id: 'u3',
-    min_stock: 10,
-    track_expiry: true,
-    last_purchase_price: 21500,
-    is_active: true,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-];
-
-// Helper to compute ISO date offset
-function offsetDays(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
-}
-
-const DEFAULT_BATCHES: InventoryBatch[] = [
-  // p1 Beras Ramos (no expiry, default batch)
-  {
-    id: 'b-p1',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p1',
-    batch_code: '',
-    received_date: offsetDays(-25),
-    expiry_date: null,
-    quantity_on_hand: 22,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p2 Beras Pandan Wangi (no expiry, critical low stock: 6 <= min_stock 8)
-  {
-    id: 'b-p2',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p2',
-    batch_code: '',
-    received_date: offsetDays(-20),
-    expiry_date: null,
-    quantity_on_hand: 6,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p3 Minyak Bimoli 2L (batch 1: normal > 30d, batch 2: warning <= 30d e.g. 20d)
-  {
-    id: 'b-p3-1',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p3',
-    batch_code: 'BM-2026-A1',
-    received_date: offsetDays(-15),
-    expiry_date: offsetDays(20), // Warning: 20 days left
-    quantity_on_hand: 8,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'b-p3-2',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p3',
-    batch_code: 'BM-2026-B2',
-    received_date: offsetDays(-5),
-    expiry_date: offsetDays(180), // Normal: 180 days left
-    quantity_on_hand: 24,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p4 Minyak SunCo 1L (out of stock: 0)
-  {
-    id: 'b-p4-1',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p4',
-    batch_code: 'SC-2026-01',
-    received_date: offsetDays(-40),
-    expiry_date: offsetDays(90),
-    quantity_on_hand: 0,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p5 Telur Ayam (batch 1: Urgent <= 7d e.g. 3 days left, batch 2: normal)
-  {
-    id: 'b-p5-1',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p5',
-    batch_code: 'TLR-0417',
-    received_date: offsetDays(-10),
-    expiry_date: offsetDays(3), // Urgent: 3 days left
-    quantity_on_hand: 7.5,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'b-p5-2',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p5',
-    batch_code: 'TLR-0420',
-    received_date: offsetDays(-2),
-    expiry_date: offsetDays(14), // Normal
-    quantity_on_hand: 20.0,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p6 Gulaku (no expiry, stock 45)
-  {
-    id: 'b-p6',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p6',
-    batch_code: '',
-    received_date: offsetDays(-30),
-    expiry_date: null,
-    quantity_on_hand: 45,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p7 Indomie Goreng (batch 1: Expired 2 days ago! e.g. -2d, batch 2: normal)
-  {
-    id: 'b-p7-exp',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p7',
-    batch_code: 'IND-2025-L9',
-    received_date: offsetDays(-180),
-    expiry_date: offsetDays(-2), // EXPIRED!
-    quantity_on_hand: 3,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 'b-p7-good',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p7',
-    batch_code: 'IND-2026-L1',
-    received_date: offsetDays(-10),
-    expiry_date: offsetDays(120),
-    quantity_on_hand: 15,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p8 Frisian Flag (stock 35)
-  {
-    id: 'b-p8',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p8',
-    batch_code: 'FF-2026-05',
-    received_date: offsetDays(-12),
-    expiry_date: offsetDays(210),
-    quantity_on_hand: 35,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p9 Segitiga Biru (critical low: 10 <= 15)
-  {
-    id: 'b-p9',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p9',
-    batch_code: 'SB-2026-02',
-    received_date: offsetDays(-20),
-    expiry_date: offsetDays(75),
-    quantity_on_hand: 10,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-  // p10 Kecap Bango (stock 18)
-  {
-    id: 'b-p10',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p10',
-    batch_code: 'BG-2026-08',
-    received_date: offsetDays(-8),
-    expiry_date: offsetDays(150),
-    quantity_on_hand: 18,
-    created_at: DEFAULT_BUSINESS.created_at,
-    updated_at: DEFAULT_BUSINESS.created_at,
-  },
-];
-
-const DEFAULT_PURCHASE_ORDERS: PurchaseOrder[] = [
-  {
-    id: 'po1',
-    business_id: DEFAULT_BUSINESS.id,
-    po_no: 1001,
-    supplier_id: 's2',
-    status: 'ordered',
-    order_date: offsetDays(-3),
-    expected_date: offsetDays(2),
-    note: 'Restock rutin Minyak Goreng SunCo yang habis',
-    created_by: DEFAULT_PROFILES[0].id,
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    items: [
-      {
-        id: 'poi1',
-        business_id: DEFAULT_BUSINESS.id,
-        purchase_order_id: 'po1',
-        product_id: 'p4',
-        ordered_quantity: 40,
-        received_quantity: 0,
-        unit_cost: 19500,
-        created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-        updated_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-      },
-    ],
-  },
-  {
-    id: 'po2',
-    business_id: DEFAULT_BUSINESS.id,
-    po_no: 1002,
-    supplier_id: 's1',
-    status: 'partially_received',
-    order_date: offsetDays(-7),
-    expected_date: offsetDays(-1),
-    note: 'Pengadaan Beras Pandan Wangi & Tepung Terigu',
-    created_by: DEFAULT_PROFILES[0].id,
-    created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-    items: [
-      {
-        id: 'poi2',
-        business_id: DEFAULT_BUSINESS.id,
-        purchase_order_id: 'po2',
-        product_id: 'p2',
-        ordered_quantity: 20,
-        received_quantity: 10,
-        unit_cost: 78000,
-        created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-        updated_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-      },
-      {
-        id: 'poi3',
-        business_id: DEFAULT_BUSINESS.id,
-        purchase_order_id: 'po2',
-        product_id: 'p9',
-        ordered_quantity: 30,
-        received_quantity: 15,
-        unit_cost: 12200,
-        created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-        updated_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-      },
-    ],
-  },
-];
-
-const DEFAULT_MOVEMENTS: StockMovement[] = [
-  {
-    id: 'm1',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p1',
-    batch_id: 'b-p1',
-    movement_type: 'opening_balance',
-    quantity_delta: 25,
-    balance_after: 25,
-    reason: 'Saldo awal migrasi sistem buku catatan',
-    group_id: 'g-init-1',
-    created_by: DEFAULT_PROFILES[0].id,
-    created_at: new Date(Date.now() - 25 * 86400000).toISOString(),
-  },
-  {
-    id: 'm2',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p1',
-    batch_id: 'b-p1',
-    movement_type: 'sale',
-    quantity_delta: -3,
-    balance_after: 22,
-    reason: 'Penjualan ke Ibu Warteg Berkah',
-    group_id: 'g-sale-1',
-    created_by: DEFAULT_PROFILES[1].id,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-  {
-    id: 'm3',
-    business_id: DEFAULT_BUSINESS.id,
-    product_id: 'p5',
-    batch_id: 'b-p5-1',
-    movement_type: 'damaged',
-    quantity_delta: -0.5,
-    balance_after: 7.5,
-    reason: 'Pecah saat bongkar muat',
-    group_id: 'g-dmg-1',
-    created_by: DEFAULT_PROFILES[2].id,
-    created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
-  },
-];
-
-const DEFAULT_AUDIT_LOGS: AuditLog[] = [
-  {
-    id: 1,
-    business_id: DEFAULT_BUSINESS.id,
-    actor_id: DEFAULT_PROFILES[0].id,
-    actor_name: 'Hj. Siti Rahmah (Owner)',
-    action: 'setup_business',
-    table_name: 'businesses',
-    record_id: DEFAULT_BUSINESS.id,
-    new_data: { name: DEFAULT_BUSINESS.name },
-    created_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 2,
-    business_id: DEFAULT_BUSINESS.id,
-    actor_id: DEFAULT_PROFILES[0].id,
-    actor_name: 'Hj. Siti Rahmah (Owner)',
-    action: 'create_product',
-    table_name: 'products',
-    record_id: 'p3',
-    new_data: { sku: 'MYK-BIM-02L', name: 'Minyak Goreng Bimoli Pouch 2L' },
-    created_at: DEFAULT_BUSINESS.created_at,
-  },
-  {
-    id: 3,
-    business_id: DEFAULT_BUSINESS.id,
-    actor_id: DEFAULT_PROFILES[1].id,
-    actor_name: 'Budi Santoso (Staff Operasional)',
-    action: 'record_stock_out',
-    table_name: 'stock_movements',
-    record_id: 'm2',
-    new_data: { product_sku: 'BRS-RAM-05K', qty: 3, type: 'sale' },
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-];
+const DEFAULT_SUPPLIERS: Supplier[] = [];
+const DEFAULT_PRODUCTS: Product[] = [];
+const DEFAULT_BATCHES: InventoryBatch[] = [];
+const DEFAULT_PURCHASE_ORDERS: PurchaseOrder[] = [];
+const DEFAULT_MOVEMENTS: StockMovement[] = [];
+const DEFAULT_AUDIT_LOGS: AuditLog[] = [];
 
 export interface AppStoreData {
   business: Business;
@@ -639,10 +120,15 @@ class SimetrisStore {
 
   private loadData(): AppStoreData {
     try {
+      // Clear legacy storage key if exists
+      localStorage.removeItem('simetris_data_v1');
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.business && parsed.products) {
+        const hasOldOwner = parsed.profiles?.some(
+          (p: any) => p.email === 'owner@berkahjaya.com' || p.full_name?.includes('Siti Rahmah')
+        );
+        if (parsed && parsed.business && parsed.products && !hasOldOwner) {
           return parsed;
         }
       }
@@ -666,22 +152,9 @@ class SimetrisStore {
       goodsReceipts: [],
       movements: DEFAULT_MOVEMENTS,
       opnames: [],
-      adjustments: [
-        {
-          id: 'adj-sample-1',
-          business_id: DEFAULT_BUSINESS.id,
-          batch_id: 'b-p9',
-          product_id: 'p9',
-          quantity_delta: -2,
-          reason: 'Bungkus bocor saat disusun di rak gudang (Hasil Opname)',
-          status: 'pending',
-          requested_by: DEFAULT_PROFILES[1].id,
-          idempotency_key: 'idem-adj-1',
-          created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
-        },
-      ],
+      adjustments: [],
       auditLogs: DEFAULT_AUDIT_LOGS,
-      activeUserId: DEFAULT_PROFILES[0].id, // Default to Owner
+      activeUserId: DEFAULT_PROFILES[0].id, // Default to Owner Simetris
     };
   }
 
@@ -711,8 +184,21 @@ class SimetrisStore {
     }
 
     const member = this.data.members.find((m) => m.user_id === profile.id);
-    if (member && !member.is_active) {
+    if (!member) {
+      return { success: false, error: 'Akun ini tidak memiliki akses atau telah dihapus oleh pemilik usaha.' };
+    }
+    if (!member.is_active) {
       return { success: false, error: 'Akun ini telah dinonaktifkan oleh pemilik usaha.' };
+    }
+
+    if (!this.supabase) {
+      const expectedPassword = profile.password || 'password';
+      if (password !== expectedPassword) {
+        if (cleanEmail === 'owner@simetris.test') {
+          return { success: false, error: 'Kata sandi salah. Gunakan sandi: password' };
+        }
+        return { success: false, error: 'Kata sandi salah.' };
+      }
     }
 
     if (this.supabase && password) {
@@ -841,15 +327,67 @@ class SimetrisStore {
     const index = this.data.members.findIndex((m) => m.user_id === userId);
     if (index === -1) throw new Error('Anggota tidak ditemukan.');
     const old = this.data.members[index];
+    if (old.role === 'owner' && update.is_active === false) {
+      throw new Error('Akun Owner tidak dapat dinonaktifkan.');
+    }
     this.data.members[index] = { ...old, ...update };
-    this.logAudit('update_member_permissions', 'business_members', userId, old, update);
+    if (update.is_active !== undefined && update.is_active !== old.is_active) {
+      this.logAudit(
+        update.is_active ? 'activate_staff_member' : 'deactivate_staff_member',
+        'business_members',
+        userId,
+        { is_active: old.is_active },
+        { is_active: update.is_active }
+      );
+    } else {
+      this.logAudit('update_member_permissions', 'business_members', userId, old, update);
+    }
     this.saveData();
   }
 
-  public createStaffMember(fullName: string, email: string, permissions?: Partial<BusinessMember>) {
+  public deleteStaffMember(userId: string) {
+    if (!this.isOwner()) throw new Error('Hanya Owner yang dapat menghapus akun staf.');
+    const memberIndex = this.data.members.findIndex((m) => m.user_id === userId);
+    if (memberIndex === -1) throw new Error('Akun staf tidak ditemukan.');
+    const member = this.data.members[memberIndex];
+    if (member.role === 'owner') {
+      throw new Error('Akun Owner tidak dapat dihapus.');
+    }
+    if (member.user_id === this.data.activeUserId) {
+      throw new Error('Tidak dapat menghapus akun yang sedang aktif digunakan.');
+    }
+    const profile = this.data.profiles.find((p) => p.id === userId);
+
+    // Remove member from business
+    this.data.members.splice(memberIndex, 1);
+
+    // Remove profile from profiles list
+    const profileIndex = this.data.profiles.findIndex((p) => p.id === userId);
+    if (profileIndex !== -1) {
+      this.data.profiles.splice(profileIndex, 1);
+    }
+
+    this.logAudit('delete_staff_member', 'business_members', userId, member, {
+      deleted_user_name: profile?.full_name || 'Staff',
+      deleted_email: profile?.email || '',
+    });
+    this.saveData();
+  }
+
+  public createStaffMember(fullName: string, email: string, permissions?: Partial<BusinessMember>, password?: string) {
     if (!this.isOwner()) throw new Error('Hanya Owner yang dapat membuat akun staf.');
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail) throw new Error('Email staf tidak boleh kosong.');
+    if (this.data.profiles.some((p) => p.email?.toLowerCase() === trimmedEmail)) {
+      throw new Error('Email staf sudah terdaftar. Gunakan alamat email lain.');
+    }
     const newUserId = 'u' + crypto.randomUUID().slice(1);
-    const newProfile: Profile = { id: newUserId, full_name: fullName, email };
+    const newProfile: Profile = {
+      id: newUserId,
+      full_name: fullName.trim(),
+      email: trimmedEmail,
+      password: password?.trim() || 'password',
+    };
     const newMember: BusinessMember = {
       business_id: this.data.business.id,
       user_id: newUserId,
@@ -863,7 +401,7 @@ class SimetrisStore {
     };
     this.data.profiles.push(newProfile);
     this.data.members.push(newMember);
-    this.logAudit('create_staff_member', 'business_members', newUserId, null, { fullName, email });
+    this.logAudit('create_staff_member', 'business_members', newUserId, null, { fullName, email: trimmedEmail });
     this.saveData();
     return newProfile;
   }
@@ -913,6 +451,30 @@ class SimetrisStore {
     this.logAudit('create_unit', 'units', unit.id, null, { name: trimmed, allowsDecimal });
     this.saveData();
     return unit;
+  }
+
+  public deleteCategory(id: string) {
+    if (!this.canManageProducts()) throw new Error('Akses ditolak: Anda tidak memiliki izin kelola produk.');
+    const inUse = this.data.products.some((p) => p.category_id === id);
+    if (inUse) throw new Error('Kategori ini masih digunakan oleh produk aktif.');
+    const idx = this.data.categories.findIndex((c) => c.id === id);
+    if (idx !== -1) {
+      const removed = this.data.categories.splice(idx, 1)[0];
+      this.logAudit('delete_category', 'categories', id, removed, null);
+      this.saveData();
+    }
+  }
+
+  public deleteUnit(id: string) {
+    if (!this.canManageProducts()) throw new Error('Akses ditolak: Anda tidak memiliki izin kelola produk.');
+    const inUse = this.data.products.some((p) => p.unit_id === id);
+    if (inUse) throw new Error('Satuan ini masih digunakan oleh produk.');
+    const idx = this.data.units.findIndex((u) => u.id === id);
+    if (idx !== -1) {
+      const removed = this.data.units.splice(idx, 1)[0];
+      this.logAudit('delete_unit', 'units', id, removed, null);
+      this.saveData();
+    }
   }
 
   public getSuppliers(): Supplier[] {

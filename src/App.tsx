@@ -18,6 +18,7 @@ export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => store.isAuthenticated());
   const [currentView, setCurrentView] = useState('dashboard');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const handleRefresh = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -60,6 +61,7 @@ export function App() {
     await store.logout();
     setIsAuthenticated(false);
     setCurrentView('dashboard');
+    setMobileSidebarOpen(false);
   };
 
   if (!isAuthenticated) {
@@ -68,21 +70,59 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-      {/* Top Navigation */}
-      <Navbar onNavigate={handleNavigate} onLogout={handleLogout} />
+      {/* Top Navigation Bar with Mobile Drawer Toggle */}
+      <Navbar
+        onNavigate={handleNavigate}
+        onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
+      />
+
+      {/* Mobile & Tablet Drawer Modal */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+
+          {/* Drawer Content */}
+          <div className="relative max-w-xs w-full bg-white shadow-2xl z-50 flex flex-col h-full animate-in slide-in-from-left duration-200">
+            <Sidebar
+              currentView={currentView}
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+              isMobileDrawer={true}
+              onCloseMobile={() => setMobileSidebarOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Main Container */}
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
-        {/* Sidebar */}
-        <Sidebar currentView={currentView} onNavigate={handleNavigate} />
+        {/* Desktop Sidebar (hidden on mobile and tablet) */}
+        <div className="hidden lg:flex shrink-0">
+          <Sidebar
+            currentView={currentView}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-5 lg:p-8 min-w-0 overflow-y-auto">
           {currentView === 'dashboard' && (
-            <DashboardView key={refreshTrigger} onNavigate={handleNavigate} onRefresh={handleRefresh} />
+            <DashboardView
+              key={refreshTrigger}
+              onNavigate={handleNavigate}
+              onRefresh={handleRefresh}
+            />
           )}
           {currentView === 'products' && (
-            <ProductsView key={refreshTrigger} onRefresh={handleRefresh} />
+            <ProductsView
+              key={refreshTrigger}
+              onRefresh={handleRefresh}
+            />
           )}
           {currentView === 'movements' && (
             <StockMovementsView key={refreshTrigger} onRefresh={handleRefresh} />
